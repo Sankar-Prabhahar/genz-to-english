@@ -1,36 +1,109 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GenZ Translator
 
-## Getting Started
+<p align="center">
+  <img src="https://img.shields.io/badge/WebGPU-Local%20Inference-6D5DF6?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Offline-After%20First%20Load-22C55E?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Model-26M%20Parameters-blue?style=for-the-badge" />
+</p>
 
-First, run the development server:
+<p align="center">
+  <b>Translate Gen Z slang into clear, standard English instantly — entirely on your own device.</b>
+</p>
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+<p align="center">
+  🌐 <a href="https://genz-to-english.vercel.app/">Live Demo</a> • 🤗 <a href="https://huggingface.co/Sankar-2910/genz-translator">Hugging Face Model</a>
+</p>
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Overview
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+GenZ Translator is an AI-powered translator designed specifically for modern internet slang.
 
-## Learn More
+Instead of relying on cloud APIs or server-side inference, the website downloads the model once and performs all inference locally inside the user's browser using **WebGPU**. Your text never leaves your device.
 
-To learn more about Next.js, take a look at the following resources:
+### Example
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Input | Output |
+|-------|--------|
+| `no cap` | *I'm being completely honest.* |
+| `she ate and left no crumbs` | *She did it perfectly.* |
+| `touch grass` | *Reconnect with reality.* |
+| `sigma behavior` | *Confident, independent behavior.* |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## Live Website
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Website**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+> https://genz-to-english.vercel.app/
+
+### Features
+
+- Local AI inference
+- WebGPU acceleration
+- Offline after first model download
+- Translation history
+- Favorites
+- Dark & Light mode
+- Mobile-friendly
+- Zero backend inference
+
+---
+
+# Model
+
+The translator is powered by **genz-translator**, a compact decoder-only language model trained entirely from scratch.
+
+Unlike fine-tuned Llama or Qwen models, this model **does not use any pretrained base model.**
+
+Every parameter was initialized randomly and learned exclusively from a curated Gen Z → English translation dataset.
+
+### Hugging Face
+
+https://huggingface.co/Sankar-2910/genz-translator
+
+---
+
+## Architecture
+
+| Component | Value |
+|-----------|--------|
+| Architecture | Decoder-only Transformer (LlamaConfig) |
+| Parameters | **26M** |
+| Layers | 7 |
+| Hidden Size | 448 |
+| Attention Heads | 7 |
+| Vocabulary | 8,000 |
+| Context Length | 384 tokens |
+| Quantization | Q8 |
+| Inference | WebGPU |
+
+The model uses:
+
+- RMSNorm
+- RoPE positional embeddings
+- SwiGLU feed-forward layers
+- Tied input/output embeddings
+- Greedy decoding (`temperature=0`)
+
+---
+
+## Training Data
+
+The model was trained on approximately **139,000** cleaned instruction-response pairs.
+
+Dataset characteristics:
+
+- English only
+- Gen Z slang → Standard English
+- Sentence translation
+- Paragraph translation
+- 90/5/5 train-validation-test split
+- Fixed instruction template
+
+Example training prompt:
+
+```text
+<s><|instruction|>Translate the following Gen Z slang sentence into clear, standard English.<|input|>no cap<|response|>
