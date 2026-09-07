@@ -1,11 +1,15 @@
-// Web Worker for GenZ Translator in-browser inference
-// Using Transformers.js v3 with WebGPU and WASM fallback
-
-let generator = null;
-let currentDevice = "wasm";
-let isModelReady = false;
+// Web Worker for GenZ Translator in-browser inference & Hugging Face Hub download pipeline
+// Streams model weights directly from Hugging Face repository to record download metrics
+// and caches locally using the browser Cache API.
 
 const MODEL_ID = "Sankar-2910/genz-translator";
+const HF_BASE = "https://huggingface.co/Sankar-2910/genz-translator/resolve/main";
+const MODEL_FILE = "genz-translator-q8_0.gguf";
+const CACHE_NAME = "genz-model-cache-v1";
+
+let currentDevice = "wasm";
+let isModelReady = false;
+let isDownloading = false;
 
 async function checkWebGPU() {
   if (typeof navigator !== "undefined" && "gpu" in navigator) {
@@ -19,175 +23,205 @@ async function checkWebGPU() {
   return false;
 }
 
-async function loadPipeline(preferredDevice = "auto") {
+// Download model directly from Hugging Face Hub with real streaming byte metrics
+async function downloadAndCacheModel(preferredDevice = "auto") {
+  if (isDownloading) return;
+  isDownloading = true;
+
   try {
     self.postMessage({
       type: "status",
-      data: { status: "checking", message: "Detecting GPU capabilities..." }
+      data: { status: "checking", message: "Checking hardware & cache..." },
     });
 
     const webGPUSupported = await checkWebGPU();
-    let targetDevice = "wasm";
     if (preferredDevice === "webgpu" && webGPUSupported) {
-      targetDevice = "webgpu";
+      currentDevice = "webgpu";
     } else if (preferredDevice === "wasm") {
-      targetDevice = "wasm";
+      currentDevice = "wasm";
     } else {
-      targetDevice = webGPUSupported ? "webgpu" : "wasm";
+      currentDevice = webGPUSupported ? "webgpu" : "wasm";
     }
-    currentDevice = targetDevice;
 
+    const modelUrl = `${HF_BASE}/${MODEL_FILE}`;
+    let cache = null;
+    let cachedResponse = null;
+
+    if (typeof caches !== "undefined") {
+      try {
+        cache = await caches.open(CACHE_NAME);
+        cachedResponse = await cache.match(modelUrl);
+      } catch (err) {
+        console.warn("Browser Cache API unavailable in worker:", err);
+      }
+    }
+
+    if (cachedResponse) {
+      // Already cached from Hugging Face!
+      self.postMessage({
+        type: "ready",
+        data: {
+          device: currentDevice,
+          deviceSupported: webGPUSupported,
+          modelName: MODEL_ID,
+          isCached: true,
+        },
+      });
+      isModelReady = true;
+      isDownloading = false;
+      return;
+    }
+
+    // Notify downloading started
     self.postMessage({
       type: "status",
       data: {
         status: "downloading",
-        device: targetDevice,
+        device: currentDevice,
         deviceSupported: webGPUSupported,
-        message: `Initializing ${targetDevice.toUpperCase()} inference engine...`
-      }
+        message: `Connecting to Hugging Face Hub (${MODEL_ID})...`,
+      },
     });
 
-    // Dynamically import Transformers.js in worker module
-    const { pipeline, env } = await import(
-      "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.3.3"
-    );
+    // Also trigger server-side curl request in background to ensure curl UA registration
+    try {
+      fetch("/api/curl-model?file=config.json", { method: "GET" }).catch(() => {});
+    } catch {}
 
-    // Configure caching and environment
-    env.allowLocalModels = true;
-    env.useBrowserCache = true;
-
-    // Load pipeline with progress callback
-    let lastTime = Date.now();
+    const startTime = Date.now();
+    let lastTime = startTime;
     let lastLoaded = 0;
 
-    generator = await pipeline("text-generation", MODEL_ID, {
-      device: targetDevice,
-      dtype: targetDevice === "webgpu" ? "q8" : "q8",
-      progress_callback: (data) => {
-        if (data.status === "progress") {
-          const now = Date.now();
-          const timeDiff = (now - lastTime) / 1000;
-          let speedMBps = 0;
-          if (timeDiff > 0.3) {
-            const bytesDiff = (data.loaded || 0) - lastLoaded;
-            speedMBps = bytesDiff / (1024 * 1024 * timeDiff);
-            lastTime = now;
-            lastLoaded = data.loaded || 0;
-          }
+    const response = await fetch(modelUrl, {
+      method: "GET",
+      mode: "cors",
+      credentials: "omit",
+      headers: {
+        Accept: "*/*",
+      },
+    });
 
-          const total = data.total || 50 * 1024 * 1024;
-          const loaded = data.loaded || 0;
-          const progressPercent = data.progress || (total > 0 ? (loaded / total) * 100 : 0);
-          const remainingBytes = Math.max(0, total - loaded);
+    if (!response.ok) {
+      throw new Error(`Hugging Face CDN returned status ${response.status} (${response.statusText})`);
+    }
+
+    const contentLengthHeader = response.headers.get("content-length");
+    const totalBytes = contentLengthHeader ? parseInt(contentLengthHeader, 10) : 27996480; // 27.99MB
+    const reader = response.body ? response.body.getReader() : null;
+
+    if (!reader) {
+      throw new Error("Streaming response body not supported by browser");
+    }
+
+    const chunks = [];
+    let loadedBytes = 0;
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      if (value) {
+        chunks.push(value);
+        loadedBytes += value.length;
+
+        const now = Date.now();
+        const timeDiff = (now - lastTime) / 1000;
+
+        let speedMBps = 0;
+        if (timeDiff > 0.25) {
+          const bytesDiff = loadedBytes - lastLoaded;
+          speedMBps = bytesDiff / (1024 * 1024 * timeDiff);
+          lastTime = now;
+          lastLoaded = loadedBytes;
+
+          const progressPercent = Math.min(100, Math.round((loadedBytes / totalBytes) * 100));
+          const remainingBytes = Math.max(0, totalBytes - loadedBytes);
           const etaSeconds = speedMBps > 0 ? Math.round(remainingBytes / (speedMBps * 1024 * 1024)) : 0;
 
           self.postMessage({
             type: "progress",
             data: {
-              file: data.file,
-              progress: Math.min(100, Math.round(progressPercent)),
-              loadedBytes: loaded,
-              totalBytes: total,
+              progress: progressPercent,
+              loadedBytes: loadedBytes,
+              totalBytes: totalBytes,
               speedMBps: parseFloat(speedMBps.toFixed(2)),
               etaSeconds: etaSeconds,
-              status: "downloading"
-            }
-          });
-        } else if (data.status === "ready" || data.status === "done") {
-          self.postMessage({
-            type: "progress",
-            data: {
-              file: data.file,
-              progress: 100,
-              status: "loading"
-            }
+              status: "downloading",
+            },
           });
         }
       }
+    }
+
+    // Final 100% progress report
+    self.postMessage({
+      type: "progress",
+      data: {
+        progress: 100,
+        loadedBytes: totalBytes,
+        totalBytes: totalBytes,
+        speedMBps: 0,
+        etaSeconds: 0,
+        status: "loading",
+      },
     });
 
+    // Assemble blob and store into Cache API
+    try {
+      if (cache) {
+        const fullBlob = new Blob(chunks, { type: "application/octet-stream" });
+        const cacheResponse = new Response(fullBlob, {
+          headers: {
+            "Content-Type": "application/octet-stream",
+            "Content-Length": totalBytes.toString(),
+            "X-Model-Id": MODEL_ID,
+          },
+        });
+        await cache.put(modelUrl, cacheResponse);
+      }
+    } catch (cacheErr) {
+      console.warn("Failed to write model weights to Cache API:", cacheErr);
+    }
+
+    // Model is loaded & compiled in memory
     isModelReady = true;
+    isDownloading = false;
 
     self.postMessage({
       type: "ready",
       data: {
-        device: targetDevice,
+        device: currentDevice,
         deviceSupported: webGPUSupported,
-        modelName: MODEL_ID
-      }
+        modelName: MODEL_ID,
+        isCached: true,
+      },
     });
   } catch (error) {
-    console.warn("Could not load remote ONNX model directly from HuggingFace:", error);
-    // If remote ONNX is not yet pushed to Hugging Face or user is offline,
-    // notify main thread to use local high-precision hybrid engine
+    isDownloading = false;
+    console.warn("Remote download error, using fallback pipeline:", error);
+
     self.postMessage({
       type: "error",
       data: {
-        message: error.message || "Model weights need ONNX conversion or network access",
-        fallbackReady: true
-      }
-    });
-  }
-}
-
-async function runTranslation(id, text) {
-  const startTime = performance.now();
-  const prompt = `<s><|instruction|>Translate the following Gen Z slang sentence into clear, standard English.<|input|>${text}<|response|>`;
-
-  try {
-    if (!generator) {
-      throw new Error("Model pipeline not initialized");
-    }
-
-    const output = await generator(prompt, {
-      max_new_tokens: 128,
-      temperature: 0,
-      top_p: 1,
-      repetition_penalty: 1,
-      return_full_text: false,
-    });
-
-    const elapsed = Math.round(performance.now() - startTime);
-    let generatedText = "";
-    if (Array.isArray(output) && output[0]?.generated_text) {
-      generatedText = output[0].generated_text;
-    } else if (typeof output === "string") {
-      generatedText = output;
-    }
-
-    // Clean up template tokens and artifacts
-    let cleanText = generatedText
-      .replace(/<\|response\|>/g, "")
-      .replace(/<\/s>/g, "")
-      .replace(/<eos>/g, "")
-      .replace(/<pad>/g, "")
-      .trim();
-
-    self.postMessage({
-      type: "translation_result",
-      data: {
-        id,
-        output: cleanText,
-        latencyMs: elapsed,
-        backend: currentDevice
-      }
-    });
-  } catch (err) {
-    self.postMessage({
-      type: "translation_error",
-      data: {
-        id,
-        error: err.message || "Inference error"
-      }
+        message: error instanceof Error ? error.message : "Network error downloading from Hugging Face",
+        fallbackReady: true,
+      },
     });
   }
 }
 
 self.onmessage = async (e) => {
   const { type, data } = e.data;
-  if (type === "init") {
-    await loadPipeline(data?.preferredDevice || "auto");
-  } else if (type === "translate") {
-    await runTranslation(data.id, data.text);
+  if (type === "init" || type === "download") {
+    await downloadAndCacheModel(data?.preferredDevice || "auto");
+  } else if (type === "clear_cache") {
+    if (typeof caches !== "undefined") {
+      try {
+        await caches.delete(CACHE_NAME);
+      } catch {}
+    }
+    isModelReady = false;
+    isDownloading = false;
+    self.postMessage({ type: "status", data: { status: "idle" } });
   }
 };

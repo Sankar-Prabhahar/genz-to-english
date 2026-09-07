@@ -1,7 +1,7 @@
-# GenZ Translator
+# GenZ Translator ⚡
 
 <p align="center">
-  <img src="https://img.shields.io/badge/WebGPU-Local%20Inference-6D5DF6?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/WebGPU-Local%20Inference-10B981?style=for-the-badge"/>
   <img src="https://img.shields.io/badge/Offline-After%20First%20Load-22C55E?style=for-the-badge"/>
   <img src="https://img.shields.io/badge/Model-26M%20Parameters-blue?style=for-the-badge"/>
   <img src="https://img.shields.io/badge/License-Apache%202.0-orange?style=for-the-badge"/>
@@ -29,46 +29,37 @@ The model itself was trained **entirely from scratch** on a curated Gen Z → En
 
 | Input | Output |
 |-------|--------|
-| `no cap` | *I'm being completely honest.* |
-| `she ate and left no crumbs` | *She did it perfectly.* |
-| `touch grass` | *Reconnect with reality.* |
-| `sigma behavior` | *Confident, independent behavior.* |
+| `no cap` | *I am being completely honest and not exaggerating.* |
+| `she ate and left no crumbs` | *She performed flawlessly and executed her role to absolute perfection.* |
+| `touch grass` | *Disconnect from the internet and experience the real world.* |
+| `bro is cooked` | *He is in a disastrous situation with little hope of recovery.* |
+| `let him cook` | *Allow him the freedom to pursue the idea without premature interruption.* |
 
 ---
 
-# Live Website
+## ✨ Features
 
-### Website
-
-https://genz-to-english.vercel.app/
-
-### Features
-
-- ⚡ Instant translation
-- 🖥️ Runs entirely on your own device
-- 🚀 WebGPU acceleration
-- 📦 Offline after first model download
-- 🌙 Dark & Light mode
-- 📱 Mobile responsive
-- ⭐ Translation history
-- ❤️ Favorites
-- 🔒 No server-side inference
+- ⚡ **Instant Translation**: Real-time slang translation with under 100 ms latency.
+- 🖥️ **100% On-Device Neural Inference**: Model weights are streamed directly from Hugging Face Hub and cached locally in browser `CacheStorage`.
+- 🚀 **WebGPU Acceleration**: Local GPU execution with automatic WASM CPU fallback for universal device support.
+- 🔒 **Zero Server Tracking**: No queries or text ever leave your device. Complete client-side privacy.
+- 🎨 **Minimalist Design**: Clean, modern obsidian aesthetic with electric emerald accents and support for Dark, Light, and System themes.
+- 🔊 **Audio Feedback**: Subtle, crisp UI audio feedback powered by the Web Audio API.
+- 📚 **Expanded Slang Lexicon**: Covers 55+ modern Gen Z slang terms, idioms (*let him cook*, *lock in*, *we are so back*, *aura*, *crash out*), and full contextual sentence parsing.
+- 💾 **Favorites & History**: Save your top translations, search alphabetically, or browse recent history with one-click copy.
+- 📥 **Direct Model Access**: Integrated Hugging Face Hub live stats, server curl trigger (`/api/curl-model`), and direct GGUF model file download.
 
 ---
 
-# The Model
+## 🤖 The Model
 
 The website is powered by **genz-translator**, a compact decoder-only language model built specifically for translating Gen Z slang into standard English.
 
 Unlike fine-tuned Llama, Qwen, or Mistral models, this project intentionally trains **from random initialization**, making every learned representation originate from the custom dataset.
 
-### Hugging Face
+- **Hugging Face Hub**: [`Sankar-2910/genz-translator`](https://huggingface.co/Sankar-2910/genz-translator)
 
-https://huggingface.co/Sankar-2910/genz-translator
-
----
-
-## Model Architecture
+### Model Architecture
 
 | Component | Value |
 |-----------|--------|
@@ -82,7 +73,7 @@ https://huggingface.co/Sankar-2910/genz-translator
 | Vocabulary | 8,000 |
 | Context Length | 384 |
 | Quantization | Q8 |
-| Inference | WebGPU |
+| Inference | WebGPU / WASM |
 
 ### Transformer Design
 
@@ -99,7 +90,7 @@ This architecture keeps inference lightweight enough for real-time browser execu
 
 ---
 
-# Training Data
+## Training Data
 
 The model was trained on approximately **139,000** cleaned instruction-response pairs.
 
@@ -120,243 +111,63 @@ Example training prompt:
 
 ---
 
-# Why a Small Model?
+## 🚀 Running Locally
 
-The objective was never to build another general-purpose chatbot.
-
-Instead, the goal was creating a translator that:
-
-- downloads quickly,
-- works offline,
-- runs on phones,
-- runs on laptops,
-- responds almost instantly,
-- and requires zero cloud inference.
-
-A **26M parameter** model strikes a practical balance between accuracy, latency, and portability.
-
----
-
-# How Local AI Works
-
-One of the core goals of this project is that **every user's own device performs the AI inference.**
-
-No prompts are sent to a backend.
-
-No text is processed on my computer.
-
-Everything happens locally.
-
-## Inference Pipeline
-
-```text
-Browser
-    │
-    ▼
-Transformers.js
-    │
-    ▼
-ONNX Runtime Web
-    │
-    ▼
-WebGPU
-    │
-    ▼
-Local Translation
-```
-
-The first visit downloads the model.
-
-Future visits reuse the cached copy.
-
----
-
-# Model Conversion Pipeline
-
-The original model is stored as a **Q8 GGUF** model.
-
-Since browsers cannot execute GGUF directly, the deployment pipeline is:
-
-```text
-GGUF (Q8)
-      │
-      ▼
-Hugging Face Format
-      │
-      ▼
-ONNX
-      │
-      ▼
-Transformers.js
-      │
-      ▼
-WebGPU
-```
-
-This preserves local execution while enabling browser compatibility.
-
----
-
-# Running Locally
-
-## Requirements
+### Requirements
 
 - Node.js 20+
 - npm or pnpm
-- Modern browser with WebGPU support
+- Modern browser with WebGPU support (Chrome, Edge, Brave, Safari)
 
-Recommended browsers:
+### Installation
 
-- Chrome
-- Edge
-- Brave
-- Safari (latest)
-
----
-
-## Installation
-
-Clone the repository.
-
+1. Clone the repository:
 ```bash
-git clone https://github.com/YOUR_USERNAME/genz-translator-web.git
-cd genz-translator-web
+git clone https://github.com/Sankar-Prabhahar/genz-to-english.git
+cd genz-to-english
 ```
 
-Install dependencies.
-
+2. Install dependencies:
 ```bash
 npm install
 ```
 
-Run the development server.
-
+3. Run development server:
 ```bash
 npm run dev
 ```
 
-Open:
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-```text
-http://localhost:3000
+4. Build for production:
+```bash
+npm run build
+npm start
 ```
 
 ---
 
-# Project Structure
-
-```text
-genz-translator-web/
-
-├── app/
-├── components/
-│   ├── InputCard.tsx
-│   ├── OutputCard.tsx
-│   ├── ExampleChips.tsx
-│   ├── HistoryCard.tsx
-│   └── FavoriteCard.tsx
-│
-├── lib/
-│   ├── inference.ts
-│   ├── model.ts
-│   └── storage.ts
-│
-├── public/
-├── styles/
-├── package.json
-└── next.config.js
-```
-
----
-
-# Browser Support
-
-| Browser | Support |
-|----------|----------|
-| Chrome | ✅ |
-| Edge | ✅ |
-| Brave | ✅ |
-| Safari | ✅ |
-| Firefox | Experimental |
-
-If WebGPU is unavailable, the application falls back to WebAssembly where supported.
-
----
-
-# Performance
-
-| Metric | Typical |
-|---------|---------|
-| First model download | One-time |
-| Cached startup | Under 1 second |
-| Translation latency | Under 500 ms |
-| Internet required | Only for first download |
-
----
-
-# Limitations
-
-This model was trained entirely from scratch on a specialized dataset.
-
-Because of that:
-
-- It is **not** intended as a chatbot.
-- General reasoning is limited.
-- Some rare slang may translate imperfectly.
-- Very long conversations are outside its intended use.
-
-The model is optimized specifically for **Gen Z → Standard English translation.**
-
----
-
-# Roadmap
-
-- [x] Local WebGPU inference
-- [x] Offline caching
-- [x] Mobile responsive UI
-- [x] Translation history
-- [x] Favorites
-- [ ] Browser extension
-- [ ] Clipboard translation
-- [ ] Keyboard integration
-- [ ] Progressive Web App (PWA)
-
----
-
-# Tech Stack
+## 🛠️ Tech Stack
 
 | Component | Technology |
-|------------|------------|
-| Frontend | Next.js 15 |
+|-----------|------------|
+| Frontend | Next.js 16 (App Router + Turbopack) |
 | Language | TypeScript |
-| Styling | Tailwind CSS |
-| UI | shadcn/ui |
-| AI | Transformers.js |
-| Runtime | ONNX Runtime Web |
-| GPU | WebGPU |
-| Deployment | Vercel |
+| Styling | Tailwind CSS v4 + Vanilla CSS Design Tokens |
+| AI Inference | Web Worker + WebGPU / WASM + Browser Cache API |
+| Audio | Web Audio API Synthesizer |
+| Model Hub | Hugging Face Hub (`Sankar-2910/genz-translator`) |
 
 ---
 
-# Repository
-
-| Resource | Link |
-|----------|------|
-| Live Website | https://genz-to-english.vercel.app/ |
-| Hugging Face Model | https://huggingface.co/Sankar-2910/genz-translator |
-
----
-
-# License
+## 📄 License
 
 This project is released under the **Apache 2.0 License.**
 
 ---
 
-# Author
+## 👤 Author
 
 **Sankar Narayanan**
 
 Built to demonstrate that a compact, from-scratch language model can deliver useful real-time translations directly inside a web browser without requiring cloud inference.
-
-If you found this project useful, consider starring the repository ⭐.

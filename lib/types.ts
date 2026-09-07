@@ -22,6 +22,8 @@ export interface ModelProgressInfo {
   modelName: string;
   isCached: boolean;
   error?: string;
+  hfDownloads?: number;
+  hfLikes?: number;
 }
 
 export interface UserSettings {

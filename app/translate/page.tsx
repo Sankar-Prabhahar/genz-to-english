@@ -30,6 +30,8 @@ export default function TranslatePage() {
     clearHistory,
     updateSettings,
     clearCache,
+    redownloadModel,
+    curlModel,
   } = useTranslator();
 
   const [favoritesModalOpen, setFavoritesModalOpen] = useState(false);
@@ -39,6 +41,17 @@ export default function TranslatePage() {
     () => history.filter((item) => item.isFavorite),
     [history]
   );
+
+  // Read URL query parameter (?text=... or ?q=...) on mount
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const textParam = params.get("text") || params.get("q");
+    if (textParam && textParam.trim()) {
+      setInput(textParam);
+      translate(textParam);
+    }
+  }, [setInput, translate]);
 
   const handleSelectExample = (text: string) => {
     setInput(text);
@@ -51,10 +64,9 @@ export default function TranslatePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-zinc-950 text-zinc-100 selection:bg-purple-600 selection:text-white relative overflow-hidden">
-      {/* Ambient background glows */}
-      <div className="pointer-events-none absolute top-[-10%] left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-gradient-to-b from-purple-900/20 via-indigo-950/15 to-transparent blur-[120px] -z-10" />
-      <div className="pointer-events-none absolute top-[30%] right-[-10%] w-[400px] h-[400px] bg-purple-950/15 blur-[100px] -z-10" />
+    <div className="min-h-screen flex flex-col bg-zinc-950 text-zinc-100 selection:bg-emerald-500/20 selection:text-emerald-300 relative overflow-hidden transition-colors">
+      {/* Subtle ambient background glow */}
+      <div className="pointer-events-none absolute top-[-10%] left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-gradient-to-b from-zinc-900/30 via-zinc-950/10 to-transparent blur-[120px] -z-10" />
 
       {/* Sticky Header */}
       <Navbar
@@ -86,7 +98,11 @@ export default function TranslatePage() {
         <Hero />
 
         {/* Model Download & Progress Banner */}
-        <ModelStatusBanner modelInfo={modelInfo} />
+        <ModelStatusBanner
+          modelInfo={modelInfo}
+          onRedownload={redownloadModel}
+          onCurlModel={curlModel}
+        />
 
         {/* Primary Input Card */}
         <InputCard
@@ -123,16 +139,16 @@ export default function TranslatePage() {
       </main>
 
       {/* Footer */}
-      <footer className="w-full border-t border-white/5 py-8 bg-zinc-950/80 backdrop-blur-md text-xs text-zinc-500">
+      <footer className="w-full border-t border-zinc-850 py-8 bg-zinc-950/80 backdrop-blur-md text-xs text-zinc-500">
         <div className="max-w-[720px] mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-purple-400" />
+            <ShieldCheck className="w-4 h-4 text-emerald-400" />
             <span>Zero server inference • 100% On-Device Privacy</span>
           </div>
-          <div className="flex items-center gap-3">
-            <span>Model: Sankar-2910/genz-translator</span>
+          <div className="flex items-center gap-3 font-mono text-[11px]">
+            <span>Sankar-2910/genz-translator</span>
             <span>•</span>
-            <span>WebGPU + Next.js 15</span>
+            <span>WebGPU + Next.js</span>
           </div>
         </div>
       </footer>
@@ -156,6 +172,7 @@ export default function TranslatePage() {
         onUpdateSettings={updateSettings}
         modelInfo={modelInfo}
         onClearCache={clearCache}
+        onCurlModel={curlModel}
       />
     </div>
   );

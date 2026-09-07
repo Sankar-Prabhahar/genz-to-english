@@ -93,7 +93,12 @@ export const storage = {
       if ("caches" in window) {
         const cacheNames = await caches.keys();
         for (const name of cacheNames) {
-          if (name.includes("transformers") || name.includes("onnx") || name.includes("huggingface")) {
+          if (
+            name.includes("transformers") ||
+            name.includes("onnx") ||
+            name.includes("huggingface") ||
+            name.includes("genz-model-cache")
+          ) {
             await caches.delete(name);
           }
         }

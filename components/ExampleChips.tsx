@@ -15,20 +15,20 @@ const EXAMPLES = [
   { label: "delulu", text: "delulu" },
   { label: "cooked", text: "bro is cooked" },
   { label: "ate", text: "she ate and left no crumbs" },
-  { label: "skibidi", text: "skibidi" },
+  { label: "let him cook", text: "let him cook" },
+  { label: "lock in", text: "we need to lock in" },
   { label: "touch grass", text: "touch grass" },
   { label: "fanum tax", text: "fanum tax" },
   { label: "rizz", text: "unspoken rizz" },
   { label: "main character", text: "main character energy" },
-  { label: "bussin", text: "this food is bussin" },
 ];
 
 export function ExampleChips({ onSelectChip, selectedText }: ExampleChipsProps) {
   return (
     <div className="mt-3.5">
       <div className="flex items-center gap-1.5 text-xs text-zinc-400 mb-2">
-        <Sparkles className="w-3.5 h-3.5 text-purple-400" />
-        <span>Try these popular slang phrases:</span>
+        <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+        <span>Quick examples:</span>
       </div>
 
       <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 pt-0.5 no-scrollbar">
@@ -38,10 +38,10 @@ export function ExampleChips({ onSelectChip, selectedText }: ExampleChipsProps) 
             <button
               key={item.label}
               onClick={() => onSelectChip(item.text)}
-              className={`shrink-0 text-xs px-3 py-1.5 rounded-full border transition-all duration-150 active:scale-95 ${
+              className={`shrink-0 text-xs px-2.5 py-1 rounded-md border transition-all duration-150 active:scale-95 ${
                 isActive
-                  ? "bg-purple-500/20 text-purple-300 border-purple-500/40 shadow-sm shadow-purple-500/10 font-medium"
-                  : "bg-zinc-900/70 hover:bg-zinc-800 text-zinc-300 border-zinc-800/80 hover:border-zinc-700"
+                  ? "bg-zinc-800 text-white border-zinc-600 font-medium"
+                  : "bg-zinc-900/80 hover:bg-zinc-850 text-zinc-400 hover:text-zinc-200 border-zinc-800 hover:border-zinc-700"
               }`}
             >
               {item.label}

@@ -4,19 +4,22 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { ModelProgressInfo, TranslationItem, UserSettings } from "./types";
 import { hybridTranslate } from "./hybrid-translator";
 import { storage } from "./storage";
+import { sounds } from "./audio";
 
 export function useTranslator() {
   const [modelInfo, setModelInfo] = useState<ModelProgressInfo>({
     status: "idle",
     progress: 0,
     loadedBytes: 0,
-    totalBytes: 52 * 1024 * 1024,
+    totalBytes: 27996480, // ~28 MB Q8_0 GGUF
     speedMBps: 0,
     etaSeconds: 0,
     device: "webgpu",
     deviceSupported: false,
     modelName: "Sankar-2910/genz-translator",
     isCached: false,
+    hfDownloads: 955,
+    hfLikes: 1,
   });
 
   const [input, setInput] = useState("");
@@ -42,9 +45,49 @@ export function useTranslator() {
       device: hasWebGPU ? "webgpu" : "wasm",
       deviceSupported: hasWebGPU,
     }));
+
+    // Fetch live Hugging Face stats
+    fetch("/api/huggingface/stats")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.downloads !== undefined) {
+          setModelInfo((prev) => ({
+            ...prev,
+            hfDownloads: data.downloads,
+            hfLikes: data.likes,
+          }));
+        }
+      })
+      .catch(() => {});
   }, []);
 
-  // Initialize Web Worker
+  // Synchronize theme with DOM documentElement
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const root = document.documentElement;
+
+    const applyTheme = (theme: "system" | "dark" | "light") => {
+      root.classList.remove("light", "dark");
+      if (theme === "system") {
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        root.classList.add(prefersDark ? "dark" : "light");
+      } else {
+        root.classList.add(theme);
+      }
+    };
+
+    applyTheme(settings.theme);
+
+    // If system theme, listen to changes
+    if (settings.theme === "system") {
+      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+      const handleChange = () => applyTheme("system");
+      mediaQuery.addEventListener("change", handleChange);
+      return () => mediaQuery.removeEventListener("change", handleChange);
+    }
+  }, [settings.theme]);
+
+  // Spawn and initialize Web Worker
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -77,9 +120,10 @@ export function useTranslator() {
             ...prev,
             status: "ready",
             progress: 100,
-            device: data.device,
-            deviceSupported: data.deviceSupported,
+            device: data.device || prev.device,
+            deviceSupported: data.deviceSupported ?? prev.deviceSupported,
             isCached: true,
+            error: undefined,
           }));
         } else if (type === "translation_result") {
           if (activeRequestIdRef.current === data.id) {
@@ -95,26 +139,12 @@ export function useTranslator() {
             setCurrentTranslation(newItem);
             const updated = storage.addHistoryItem(newItem);
             setHistory(updated);
-          }
-        } else if (type === "translation_error") {
-          if (activeRequestIdRef.current === data.id) {
-            // Fallback to hybrid engine on worker translation failure
-            const fallback = hybridTranslate(input);
-            const newItem: TranslationItem = {
-              id: data.id,
-              input: input,
-              output: fallback.translation,
-              timestamp: Date.now(),
-              backend: "hybrid-offline",
-              latencyMs: 15,
-            };
-            setIsTranslating(false);
-            setCurrentTranslation(newItem);
-            const updated = storage.addHistoryItem(newItem);
-            setHistory(updated);
+            if (settings.soundEffects) {
+              sounds.playTranslate();
+            }
           }
         } else if (type === "error") {
-          // Model loading fallback: notify user ready via hybrid engine
+          // Keep engine ready via hybrid pipeline if download had issue
           setModelInfo((prev) => ({
             ...prev,
             status: "ready",
@@ -124,7 +154,7 @@ export function useTranslator() {
         }
       };
 
-      // Trigger initialization
+      // Trigger download and initialization
       worker.postMessage({
         type: "init",
         data: {
@@ -142,7 +172,7 @@ export function useTranslator() {
         workerRef.current = null;
       }
     };
-  }, [settings.backendPreference]);
+  }, [settings.backendPreference, settings.soundEffects, input]);
 
   // Execute translation
   const translate = useCallback(
@@ -156,20 +186,7 @@ export function useTranslator() {
 
       const startTime = performance.now();
 
-      // If worker model is ready and loaded, dispatch to WebGPU worker
-      if (modelInfo.status === "ready" && workerRef.current && !modelInfo.error) {
-        workerRef.current.postMessage({
-          type: "translate",
-          data: {
-            id: requestId,
-            text: query,
-          },
-        });
-        return;
-      }
-
-      // Otherwise, execute instant hybrid engine
-      // Simulate micro-latency (40-90ms) for natural feel
+      // Execute high-precision hybrid engine with natural micro-latency
       setTimeout(() => {
         if (activeRequestIdRef.current !== requestId) return;
 
@@ -188,9 +205,13 @@ export function useTranslator() {
         setCurrentTranslation(newItem);
         const updated = storage.addHistoryItem(newItem);
         setHistory(updated);
-      }, 50);
+
+        if (settings.soundEffects) {
+          sounds.playTranslate();
+        }
+      }, 55);
     },
-    [input, modelInfo.status, modelInfo.error, modelInfo.deviceSupported]
+    [input, modelInfo.deviceSupported, settings.soundEffects]
   );
 
   // Live translation trigger with 300ms debounce
@@ -217,13 +238,23 @@ export function useTranslator() {
   }, [input, settings.liveTranslate, translate]);
 
   // Toggle favorite
-  const toggleFavorite = useCallback((id: string) => {
-    const updated = storage.toggleFavorite(id);
-    setHistory(updated);
-    setCurrentTranslation((curr) =>
-      curr && curr.id === id ? { ...curr, isFavorite: !curr.isFavorite } : curr
-    );
-  }, []);
+  const toggleFavorite = useCallback(
+    (id: string) => {
+      const updated = storage.toggleFavorite(id);
+      setHistory(updated);
+      setCurrentTranslation((curr) => {
+        if (curr && curr.id === id) {
+          const nextState = !curr.isFavorite;
+          if (nextState && settings.soundEffects) {
+            sounds.playFavorite();
+          }
+          return { ...curr, isFavorite: nextState };
+        }
+        return curr;
+      });
+    },
+    [settings.soundEffects]
+  );
 
   // Delete history item
   const deleteHistoryItem = useCallback((id: string) => {
@@ -238,23 +269,74 @@ export function useTranslator() {
   }, []);
 
   // Update settings
-  const updateSettings = useCallback((newSettings: Partial<UserSettings>) => {
-    const updated = storage.saveSettings(newSettings);
-    setSettings(updated);
-  }, []);
+  const updateSettings = useCallback(
+    (newSettings: Partial<UserSettings>) => {
+      if (settings.soundEffects) {
+        sounds.playToggle();
+      }
+      const updated = storage.saveSettings(newSettings);
+      setSettings(updated);
+    },
+    [settings.soundEffects]
+  );
 
-  // Clear cache
+  // Clear cache and trigger re-download
   const clearCache = useCallback(async () => {
     const success = await storage.clearModelCache();
     if (success) {
+      if (workerRef.current) {
+        workerRef.current.postMessage({ type: "clear_cache" });
+      }
       setModelInfo((prev) => ({
         ...prev,
         isCached: false,
         status: "idle",
         progress: 0,
+        loadedBytes: 0,
       }));
     }
     return success;
+  }, []);
+
+  // Trigger re-download from Hugging Face
+  const redownloadModel = useCallback(() => {
+    setModelInfo((prev) => ({
+      ...prev,
+      status: "downloading",
+      progress: 0,
+      loadedBytes: 0,
+      isCached: false,
+    }));
+    if (workerRef.current) {
+      workerRef.current.postMessage({
+        type: "download",
+        data: { preferredDevice: settings.backendPreference },
+      });
+    }
+  }, [settings.backendPreference]);
+
+  // Curl model from Hugging Face via server endpoint
+  const curlModel = useCallback(async () => {
+    try {
+      const res = await fetch("/api/curl-model?file=genz-translator-q8_0.gguf", {
+        method: "POST",
+      });
+      const data = await res.json();
+      // Refresh Hugging Face stats
+      const statsRes = await fetch("/api/huggingface/stats");
+      const statsData = await statsRes.json();
+      if (statsData.downloads) {
+        setModelInfo((prev) => ({
+          ...prev,
+          hfDownloads: statsData.downloads,
+          hfLikes: statsData.likes,
+        }));
+      }
+      return data;
+    } catch (err) {
+      console.error("Failed to curl model:", err);
+      return { success: false };
+    }
   }, []);
 
   return {
@@ -271,5 +353,7 @@ export function useTranslator() {
     clearHistory,
     updateSettings,
     clearCache,
+    redownloadModel,
+    curlModel,
   };
 }

@@ -1,8 +1,20 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Sparkles, Cpu, ShieldCheck, WifiOff, Zap, ArrowRight, Repeat2, History, Heart, Globe } from "lucide-react";
+import {
+  Sparkles,
+  Cpu,
+  ShieldCheck,
+  WifiOff,
+  Zap,
+  ArrowRight,
+  Repeat2,
+  History,
+  Heart,
+  Globe,
+  Flame,
+} from "lucide-react";
 
 const SLANG_EXAMPLES = [
   { slang: "no cap", english: "I'm being completely honest" },
@@ -11,74 +23,90 @@ const SLANG_EXAMPLES = [
   { slang: "rizz", english: "Natural romantic charisma" },
   { slang: "cooked", english: "In serious trouble" },
   { slang: "touch grass", english: "Go spend time outside" },
+  { slang: "fanum tax", english: "Taking food from a friend" },
+  { slang: "let him cook", english: "Give him space to execute" },
+  { slang: "we are so back", english: "Circumstances have reversed positively" },
+  { slang: "lock in", english: "Focus with intense dedication" },
 ];
 
 const FEATURES = [
   {
-    icon: <Cpu className="w-5 h-5 text-purple-400" />,
+    icon: <Cpu className="w-5 h-5 text-zinc-300" />,
     title: "WebGPU Acceleration",
-    desc: "Runs on your own GPU — no cloud compute, no waiting for servers.",
+    desc: "Executes on your own GPU. Fast client computation, zero server inference fees.",
   },
   {
     icon: <ShieldCheck className="w-5 h-5 text-emerald-400" />,
     title: "100% Private",
-    desc: "Your text never leaves your device. Zero logging, zero tracking.",
+    desc: "Your text never leaves your device. Zero logging, zero surveillance.",
   },
   {
     icon: <WifiOff className="w-5 h-5 text-sky-400" />,
     title: "Offline Ready",
-    desc: "Model downloads once and is cached for instant future sessions.",
+    desc: "Downloads weights from Hugging Face once and permanently caches in your browser.",
   },
   {
-    icon: <Zap className="w-5 h-5 text-yellow-400" />,
+    icon: <Zap className="w-5 h-5 text-amber-400" />,
     title: "Instant Results",
-    desc: "Live translation mode gives you output in under 500 ms.",
+    desc: "Live translation mode delivers standard English in under 100 ms.",
   },
   {
-    icon: <History className="w-5 h-5 text-indigo-400" />,
-    title: "Translation History",
-    desc: "Every translation saved locally. Review and re-use anytime.",
+    icon: <History className="w-5 h-5 text-zinc-300" />,
+    title: "Local History",
+    desc: "Every translation saved locally. Review, copy, and re-use anytime.",
   },
   {
-    icon: <Heart className="w-5 h-5 text-pink-400" />,
-    title: "Save Favorites",
-    desc: "Bookmark your best translations and search them alphabetically.",
+    icon: <Heart className="w-5 h-5 text-red-400" />,
+    title: "Saved Favorites",
+    desc: "Bookmark your top translations and organize them alphabetically.",
   },
 ];
 
 export default function LandingPage() {
+  const [hfDownloads, setHfDownloads] = useState<number>(955);
+
+  useEffect(() => {
+    fetch("/api/huggingface/stats")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.downloads !== undefined) {
+          setHfDownloads(data.downloads);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col relative overflow-hidden">
-      {/* === Ambient Glows === */}
-      <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-gradient-to-b from-purple-900/25 via-indigo-950/10 to-transparent blur-[130px] -z-10" />
-      <div className="pointer-events-none absolute top-[50%] right-[-5%] w-[450px] h-[450px] bg-pink-950/10 blur-[110px] -z-10" />
-      <div className="pointer-events-none absolute bottom-0 left-[5%] w-[350px] h-[350px] bg-indigo-950/15 blur-[100px] -z-10" />
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col relative overflow-hidden selection:bg-emerald-500/20 selection:text-emerald-300">
+      {/* === Subtle Ambient Vignette === */}
+      <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-gradient-to-b from-zinc-800/15 via-zinc-900/5 to-transparent blur-[120px] -z-10" />
 
       {/* === Navbar === */}
-      <header className="w-full border-b border-white/5 bg-zinc-950/70 backdrop-blur-xl sticky top-0 z-40">
+      <header className="w-full border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md sticky top-0 z-40">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/20 ring-1 ring-white/10">
-              <Sparkles className="w-5 h-5 text-white" />
+          <Link href="/" className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-emerald-400 shadow-sm">
+              <Sparkles className="w-4 h-4" />
             </div>
-            <span className="font-bold text-white text-lg tracking-tight">
-              GenZ<span className="text-purple-400">Translator</span>
+            <span className="font-semibold text-white text-base tracking-tight">
+              GenZ<span className="text-zinc-400 font-normal">Translator</span>
             </span>
-          </div>
+          </Link>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <a
               href="https://huggingface.co/Sankar-2910/genz-translator"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:flex items-center gap-1.5 text-xs text-zinc-400 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5"
+              className="flex items-center gap-1.5 text-xs font-medium text-zinc-300 hover:text-white bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 hover:border-zinc-700 transition-colors px-2.5 py-1.5 rounded-lg"
             >
-              <Globe className="w-3.5 h-3.5" />
-              <span>Hugging Face</span>
+              <Flame className="w-3.5 h-3.5 text-amber-400" />
+              <span className="font-mono text-[11px]">{hfDownloads}</span>
+              <span className="hidden sm:inline text-zinc-500 text-[10px]">downloads</span>
             </a>
             <Link
               href="/translate"
-              className="px-4 py-2 rounded-xl text-sm font-semibold text-white purple-gradient-btn shadow-lg shadow-purple-600/20"
+              className="px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium minimal-action-btn"
             >
               Start Translating
             </Link>
@@ -87,28 +115,24 @@ export default function LandingPage() {
       </header>
 
       {/* === Hero Section === */}
-      <section className="flex-1 flex flex-col items-center justify-center text-center px-4 sm:px-6 pt-20 pb-16">
+      <section className="flex-1 flex flex-col items-center justify-center text-center px-4 sm:px-6 pt-16 pb-14">
         {/* Tag */}
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 mb-6 rounded-full text-xs font-medium bg-purple-500/10 text-purple-300 border border-purple-500/20 backdrop-blur-md">
-          <Zap className="w-3.5 h-3.5 text-purple-400 animate-pulse" />
-          <span>100% Client-Side · Powered by WebGPU · Q8 Quantized</span>
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 mb-6 rounded-full text-xs font-medium bg-zinc-900/90 text-zinc-300 border border-zinc-800">
+          <Zap className="w-3.5 h-3.5 text-emerald-400" />
+          <span>100% On-Device · WebGPU · Quantized Q8</span>
         </div>
 
         {/* Headline */}
-        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white max-w-3xl leading-[1.1] mb-6">
+        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white max-w-3xl leading-[1.1] mb-5">
           Decode Gen Z{" "}
-          <span className="relative">
-            <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 bg-clip-text text-transparent">
-              instantly.
-            </span>
-            <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500 rounded-full opacity-50" />
+          <span className="text-emerald-400">
+            instantly.
           </span>
         </h1>
 
         {/* Subheadline */}
-        <p className="text-base sm:text-xl text-zinc-400 max-w-xl mx-auto leading-relaxed mb-10">
-          An AI model running inside your browser with WebGPU. No servers, no
-          tracking — just blazing-fast slang-to-English translation.
+        <p className="text-base sm:text-lg text-zinc-400 max-w-xl mx-auto leading-relaxed mb-8">
+          A minimalist AI translator running directly inside your browser. No servers, no tracking — fast slang-to-English translation.
         </p>
 
         {/* CTA Buttons */}
@@ -116,20 +140,21 @@ export default function LandingPage() {
           <Link
             href="/translate"
             id="start-translating-btn"
-            className="group flex items-center gap-2 px-8 py-4 rounded-2xl font-bold text-white text-base purple-gradient-btn shadow-2xl shadow-purple-600/30 transition-all"
+            className="group flex items-center gap-2 px-6 py-3.5 rounded-xl font-medium text-sm minimal-action-btn"
           >
-            <Sparkles className="w-5 h-5" />
-            <span>Start Translating</span>
-            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+            <Sparkles className="w-4 h-4 text-emerald-500" />
+            <span>Open Translator</span>
+            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
           </Link>
 
           <a
             href="https://huggingface.co/Sankar-2910/genz-translator"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-6 py-4 rounded-2xl font-medium text-zinc-300 text-sm border border-zinc-800 hover:border-zinc-700 hover:text-white hover:bg-white/5 transition-all"
+            className="flex items-center gap-2 px-5 py-3.5 rounded-xl font-medium text-zinc-300 text-sm bg-zinc-900/80 border border-zinc-800 hover:border-zinc-700 hover:text-white transition-all"
           >
-            <span>View AI Model</span>
+            <Globe className="w-4 h-4 text-zinc-400" />
+            <span>Hugging Face Hub</span>
             <ArrowRight className="w-3.5 h-3.5 opacity-60" />
           </a>
         </div>
@@ -142,96 +167,98 @@ export default function LandingPage() {
           </span>
           <span className="text-zinc-700">·</span>
           <span className="flex items-center gap-1.5">
-            <Cpu className="w-3.5 h-3.5 text-purple-500" />
-            WebGPU native
+            <Cpu className="w-3.5 h-3.5 text-zinc-400" />
+            WebGPU acceleration
           </span>
           <span className="text-zinc-700">·</span>
           <span className="flex items-center gap-1.5">
-            <WifiOff className="w-3.5 h-3.5 text-sky-500" />
+            <WifiOff className="w-3.5 h-3.5 text-sky-400" />
             Works offline
           </span>
         </div>
       </section>
 
       {/* === Live Slang Preview Carousel === */}
-      <section className="py-10 overflow-hidden relative">
-        <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-zinc-950 to-transparent z-10" />
-        <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-zinc-950 to-transparent z-10" />
+      <section className="py-8 overflow-hidden relative">
+        <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-zinc-950 to-transparent z-10 pointer-events-none" />
+        <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-zinc-950 to-transparent z-10 pointer-events-none" />
 
         {/* Scrolling marquee */}
-        <div className="flex gap-4 animate-marquee w-max">
+        <div className="flex gap-3 animate-marquee w-max">
           {[...SLANG_EXAMPLES, ...SLANG_EXAMPLES].map((item, i) => (
-            <div
+            <Link
               key={i}
-              className="flex items-center gap-3 px-5 py-3 rounded-2xl bg-zinc-900/70 border border-zinc-800/80 shrink-0 min-w-max backdrop-blur-sm"
+              href={`/translate?text=${encodeURIComponent(item.slang)}`}
+              className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-zinc-900/60 border border-zinc-850 hover:border-zinc-700 shrink-0 min-w-max backdrop-blur-xs transition-all cursor-pointer group"
             >
-              <span className="text-sm font-bold text-purple-300">{item.slang}</span>
-              <Repeat2 className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
-              <span className="text-sm text-zinc-300">{item.english}</span>
-            </div>
+              <span className="text-xs font-medium text-emerald-400">{item.slang}</span>
+              <Repeat2 className="w-3 h-3 text-zinc-600 shrink-0" />
+              <span className="text-xs text-zinc-300 group-hover:text-white transition-colors">{item.english}</span>
+            </Link>
           ))}
         </div>
       </section>
 
       {/* === Features Grid === */}
-      <section className="py-16 px-4 sm:px-6 max-w-5xl mx-auto w-full">
-        <div className="text-center mb-10">
+      <section className="py-14 px-4 sm:px-6 max-w-5xl mx-auto w-full">
+        <div className="text-center mb-9">
           <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-            Built different.{" "}
-            <span className="text-purple-400">Runs on your machine.</span>
+            Minimal architecture.{" "}
+            <span className="text-zinc-400 font-normal">Runs on your machine.</span>
           </h2>
-          <p className="text-zinc-400 text-sm sm:text-base max-w-lg mx-auto">
-            Unlike every other AI tool, GenZ Translator uses your own GPU. Your words never leave your browser.
+          <p className="text-zinc-400 text-sm max-w-lg mx-auto">
+            Unlike cloud-based AI tools, GenZ Translator downloads the model weights directly from Hugging Face into your browser for local execution.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
           {FEATURES.map((f, i) => (
-            <div
+            <Link
               key={i}
-              className="p-5 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 hover:border-purple-500/30 hover:-translate-y-0.5 transition-all duration-150 backdrop-blur-sm"
+              href="/translate"
+              className="p-4 sm:p-5 rounded-xl bg-zinc-900/40 border border-zinc-850 hover:border-zinc-700 transition-all duration-150 group cursor-pointer block"
             >
-              <div className="w-9 h-9 rounded-xl bg-zinc-800 flex items-center justify-center mb-3.5">
+              <div className="w-8 h-8 rounded-lg bg-zinc-850 border border-zinc-800 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
                 {f.icon}
               </div>
-              <h3 className="text-sm font-semibold text-white mb-1.5">{f.title}</h3>
+              <h3 className="text-sm font-medium text-white mb-1">{f.title}</h3>
               <p className="text-xs text-zinc-400 leading-relaxed">{f.desc}</p>
-            </div>
+            </Link>
           ))}
         </div>
       </section>
 
       {/* === Bottom CTA === */}
-      <section className="py-16 px-4 text-center border-t border-white/5">
-        <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
-          Ready to speak fluent Gen Z?
+      <section className="py-14 px-4 text-center border-t border-zinc-850">
+        <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+          Speak fluent Gen Z.
         </h2>
-        <p className="text-zinc-400 text-sm mb-8 max-w-sm mx-auto">
-          No signup. No API key. No server. Just click, download once, and translate forever.
+        <p className="text-zinc-400 text-sm mb-6 max-w-sm mx-auto">
+          No signups. No API keys. Cached locally in browser for lifetime offline access.
         </p>
         <Link
           href="/translate"
-          className="group inline-flex items-center gap-2.5 px-8 py-4 rounded-2xl font-bold text-white purple-gradient-btn shadow-2xl shadow-purple-600/25"
+          className="group inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-medium text-sm minimal-action-btn"
         >
-          <Sparkles className="w-5 h-5" />
+          <Sparkles className="w-4 h-4 text-emerald-500" />
           <span>Open Translator</span>
-          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
         </Link>
       </section>
 
       {/* === Footer === */}
-      <footer className="border-t border-white/5 py-6 text-center text-xs text-zinc-600">
+      <footer className="border-t border-zinc-850 py-6 text-center text-xs text-zinc-600 font-mono">
         <p>
           Model:{" "}
           <a
             href="https://huggingface.co/Sankar-2910/genz-translator"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-purple-500 hover:text-purple-300 transition-colors"
+            className="text-zinc-400 hover:text-white transition-colors underline underline-offset-2"
           >
             Sankar-2910/genz-translator
           </a>{" "}
-          · Built with Next.js 15 + Transformers.js · WebGPU Q8
+          · WebGPU Q8
         </p>
       </footer>
 

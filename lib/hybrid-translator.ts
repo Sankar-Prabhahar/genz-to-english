@@ -14,32 +14,32 @@ export const SLANG_DICTIONARY: SlangEntry[] = [
   },
   {
     term: "cap",
-    replacement: "a lie or falsehood",
-    variations: ["capping", "capped", "that's cap", "thats cap"],
+    replacement: "a falsehood or lie",
+    variations: ["capping", "capped", "that's cap", "thats cap", "straight cap"],
     explanation: "Refers to a falsehood, deceit, or exaggeration."
   },
   {
     term: "fr",
-    replacement: "genuinely / for real",
+    replacement: "genuinely and truly",
     variations: ["fr fr", "for real", "frfr", "fr tho"],
     explanation: "Short for 'for real', used for genuine agreement or emphasis."
   },
   {
     term: "sigma",
-    replacement: "an independent, confident individual who succeeds on their own terms",
+    replacement: "an independent, confident individual who succeeds autonomously",
     variations: ["sigma male", "sigma grindset", "sigma vibe"],
     explanation: "Describes an introverted, autonomous leader outside typical social hierarchies."
   },
   {
     term: "delulu",
-    replacement: "delusional or entertaining unrealistic expectations",
-    variations: ["delulu is the solulu", "so delulu"],
+    replacement: "delusional or harboring unrealistically optimistic expectations",
+    variations: ["delulu is the solulu", "so delulu", "pure delulu"],
     explanation: "Derived from 'delusional', often used humorously about optimistic fantasies."
   },
   {
     term: "cooked",
-    replacement: "in serious trouble, exhausted, or facing inevitable failure",
-    variations: ["bro is cooked", "we are cooked", "im cooked", "i'm cooked"],
+    replacement: "in serious trouble or facing inevitable failure",
+    variations: ["bro is cooked", "we are cooked", "im cooked", "i'm cooked", "you're cooked", "he is cooked"],
     explanation: "Means someone is in an inescapable, compromised, or ruined situation."
   },
   {
@@ -50,49 +50,67 @@ export const SLANG_DICTIONARY: SlangEntry[] = [
   },
   {
     term: "skibidi",
-    replacement: "chaotic, weird, or surreal internet phenomenon",
+    replacement: "chaotic, surreal, or absurd internet pop-culture phenomenon",
     variations: ["skibidi toilet", "skibidi rizz"],
     explanation: "A viral meme catchphrase originating from Source Filmmaker animations."
   },
   {
     term: "touch grass",
-    replacement: "step outside and reconnect with real-world physical reality",
+    replacement: "disconnect from the internet and experience the real world",
     variations: ["go touch grass", "needs to touch grass"],
     explanation: "A reminder to someone spending excessive time online to take a break outdoors."
   },
   {
     term: "fanum tax",
-    replacement: "stealing a portion of a friend's food without permission",
+    replacement: "taking a portion of a companion's food without prior consent",
     variations: ["fanum taxed", "paying the fanum tax"],
     explanation: "Popularized by streamer Fanum, describing sneaking bites from someone's meal."
   },
   {
     term: "rizz",
-    replacement: "natural charisma and romantic appeal",
-    variations: ["unspoken rizz", "w rizz", "rizzler", "rizzing"],
+    replacement: "natural charm and romantic appeal",
+    variations: ["unspoken rizz", "w rizz", "rizzler", "rizzing", "maximum rizz"],
     explanation: "Short for 'charisma', referring to charming social or romantic prowess."
   },
   {
+    term: "aura",
+    replacement: "personal charisma, prestige, or cool factor",
+    variations: ["infinite aura", "+1000 aura", "-1000 aura", "lost aura", "aura points"],
+    explanation: "The perceived presence or prestige an individual projects."
+  },
+  {
+    term: "lock in",
+    replacement: "concentrate intensely and eliminate all distractions",
+    variations: ["locked in", "locking in", "we need to lock in"],
+    explanation: "Entering a state of deep focus or serious commitment."
+  },
+  {
+    term: "let him cook",
+    replacement: "give him space and uninterrupted freedom to perform his ideas",
+    variations: ["let bro cook", "let them cook", "hold on let him cook"],
+    explanation: "Allowing someone the opportunity to show what they are capable of."
+  },
+  {
     term: "gyatt",
-    replacement: "an expression of intense amazement or physical admiration",
+    replacement: "an exuberant exclamation of astonishment or admiration",
     variations: ["gyat", "level 10 gyatt"],
     explanation: "A phonetic abbreviation of 'god damn' expressing excitement or shock."
   },
   {
     term: "main character",
-    replacement: "someone behaving as though they are the central protagonist of a film",
+    replacement: "someone behaving as though the universe revolves entirely around them",
     variations: ["main character energy", "main character syndrome"],
     explanation: "Believing one is at the epicenter of attention and dramatic focus."
   },
   {
     term: "rent free",
-    replacement: "obsessively lingering in one's mind without resolution",
+    replacement: "obsessively lingering in one's thoughts without resolution",
     variations: ["living rent free", "lives rent free in my head"],
     explanation: "When an idea, person, or song occupies someone's persistent thoughts."
   },
   {
     term: "bussin",
-    replacement: "extraordinarily delicious or exceptionally great",
+    replacement: "extraordinarily delicious or exceptionally well-crafted",
     variations: ["bussing", "bussin bussin", "so bussin"],
     explanation: "Originally AAVE, heavily used to describe exceptionally delectable food."
   },
@@ -104,13 +122,13 @@ export const SLANG_DICTIONARY: SlangEntry[] = [
   },
   {
     term: "sus",
-    replacement: "suspicious or dubious in character",
-    variations: ["acting sus", "super sus"],
+    replacement: "suspicious, untrustworthy, or dubious",
+    variations: ["acting sus", "super sus", "hella sus"],
     explanation: "Short for suspicious, popularized by the multiplayer game Among Us."
   },
   {
     term: "periodt",
-    replacement: "and that is final, with no further debate",
+    replacement: "and that is final, with no further discussion needed",
     variations: ["period", "and that's on periodt"],
     explanation: "Used at the conclusion of a statement to declare it incontrovertible."
   },
@@ -128,7 +146,7 @@ export const SLANG_DICTIONARY: SlangEntry[] = [
   },
   {
     term: "mid",
-    replacement: "mediocre, uninspired, or average",
+    replacement: "mediocre, unimpressive, or unremarkable",
     variations: ["so mid", "pretty mid"],
     explanation: "Derogatory evaluation meaning something fails to meet high expectations."
   },
@@ -140,20 +158,20 @@ export const SLANG_DICTIONARY: SlangEntry[] = [
   },
   {
     term: "yap",
-    replacement: "to talk excessively, ramble, or babble about trivia",
-    variations: ["yapping", "yapper", "yapped", "yap session"],
+    replacement: "to talk excessively, ramble, or chatter aimlessly",
+    variations: ["yapping", "yapper", "yapped", "yap session", "stop yapping"],
     explanation: "Complaining that someone is talking too long without substance."
   },
   {
     term: "mewing",
-    replacement: "maintaining tongue posture against the palate to sharpen jawline aesthetics",
+    replacement: "maintaining tongue posture against the palate to accentuate jawline definition",
     variations: ["mew", "looksmaxxing"],
     explanation: "A viral physical posture technique purported to alter facial structure."
   },
   {
     term: "glazing",
-    replacement: "overwhelming someone with excessive sycophancy and flattery",
-    variations: ["glaze", "meat riding", "glazer"],
+    replacement: "overwhelming someone with excessive sycophancy and exaggerated praise",
+    variations: ["glaze", "meat riding", "glazer", "stop glazing"],
     explanation: "Criticism for praising another person beyond reasonable proportions."
   },
   {
@@ -200,7 +218,7 @@ export const SLANG_DICTIONARY: SlangEntry[] = [
   },
   {
     term: "stan",
-    replacement: "an ardent, obsessive fan of a celebrity or brand",
+    replacement: "an ardent, obsessive fan of a public figure or brand",
     variations: ["stanning", "stanned"],
     explanation: "Portmanteau of stalker and fan, popularized by Eminem's song."
   },
@@ -209,6 +227,90 @@ export const SLANG_DICTIONARY: SlangEntry[] = [
     replacement: "completely legitimate, understandable, and reasonable",
     variations: ["so valid", "super valid"],
     explanation: "Affirming that a choice, reaction, or perspective makes good sense."
+  },
+  {
+    term: "deadass",
+    replacement: "with complete earnestness and absolute seriousness",
+    variations: ["dead ass", "dead-ass"],
+    explanation: "Emphasizes sincerity, equivalent to 'I swear' or 'seriously'."
+  },
+  {
+    term: "brainrot",
+    replacement: "low-quality, repetitive digital media content that diminishes cognitive focus",
+    variations: ["brain rot", "pure brainrot"],
+    explanation: "Refers to hyper-stimulating, mindless online memes and media."
+  },
+  {
+    term: "drip",
+    replacement: "impeccable, fashionable attire and personal style",
+    variations: ["drippy", "drip check"],
+    explanation: "Refers to a stylish, cool outfit and confident demeanor."
+  },
+  {
+    term: "glow up",
+    replacement: "a remarkable personal transformation or aesthetic improvement",
+    variations: ["glowup", "glowing up"],
+    explanation: "Significant positive change in physical appearance, style, or maturity."
+  },
+  {
+    term: "hits different",
+    replacement: "resonates on a significantly deeper or more poignant emotional level",
+    variations: ["hit different", "hitting different"],
+    explanation: "Describes an experience that feels uniquely impactful or satisfying."
+  },
+  {
+    term: "iykyk",
+    replacement: "if you know, you know (implying insider knowledge)",
+    variations: ["if you know you know"],
+    explanation: "Short for 'if you know, you know', denoting an inside reference."
+  },
+  {
+    term: "caught in 4k",
+    replacement: "caught committing a blunder with indisputable, high-definition evidence",
+    variations: ["caught in 4k fr", "in 4k"],
+    explanation: "Being caught doing something embarrassing with clear photographic or video proof."
+  },
+  {
+    term: "we are so back",
+    replacement: "our circumstances have experienced a glorious and triumphant turnaround",
+    variations: ["we're so back", "so back"],
+    explanation: "Exclamation of revived optimism following a string of setbacks."
+  },
+  {
+    term: "it's over for bro",
+    replacement: "his circumstances have collapsed beyond any conceivable hope of recovery",
+    variations: ["its over for bro", "it's over"],
+    explanation: "Humorous declaration of someone's total doom or defeat."
+  },
+  {
+    term: "opps",
+    replacement: "adversaries, rivals, or opposing forces",
+    variations: ["the opps", "opp"],
+    explanation: "Short for opposition, referring to rivals or enemies."
+  },
+  {
+    term: "vibe check",
+    replacement: "an assessment of someone's current mood, attitude, or positive energy",
+    variations: ["vibe checking", "vibe checked"],
+    explanation: "Checking whether someone's attitude matches the social atmosphere."
+  },
+  {
+    term: "tea",
+    replacement: "sensational gossip or confidential interpersonal information",
+    variations: ["spill the tea", "what's the tea"],
+    explanation: "Sharing dramatic gossip or confidential details."
+  },
+  {
+    term: "w",
+    replacement: "a resounding victory or commendable achievement",
+    variations: ["massive w", "big w", "common w"],
+    explanation: "Stands for 'Win', celebrating positive news or praiseworthy actions."
+  },
+  {
+    term: "l",
+    replacement: "an unfortunate loss, embarrassment, or failure",
+    variations: ["massive l", "big l", "common l", "take the l"],
+    explanation: "Stands for 'Loss', expressing defeat or awkward embarrassment."
   }
 ];
 
@@ -224,14 +326,13 @@ export function hybridTranslate(text: string): { translation: string; confidence
   for (const item of SLANG_DICTIONARY) {
     if (lower === item.term || item.variations.some((v) => lower === v)) {
       const formal = item.replacement;
-      // Capitalize first letter
       const result = formal.charAt(0).toUpperCase() + formal.slice(1) + ".";
       return { translation: result, confidence: 0.98 };
     }
   }
 
-  // Handle common idiomatic patterns
-  const wholeSentencePatterns: Array<{ regex: RegExp; replace: (match: RegExpMatchArray) => string }> = [
+  // Idiomatic pattern engine
+  const idiomaticPatterns: Array<{ regex: RegExp; replace: (match: RegExpMatchArray) => string }> = [
     {
       regex: /^(bro|dude|he|she|they|we|i)\s+(is|are|am)\s+cooked$/i,
       replace: (m) => `${m[1].charAt(0).toUpperCase() + m[1].slice(1)} ${m[2]} in a disastrous situation with little hope of recovery.`
@@ -249,12 +350,12 @@ export function hybridTranslate(text: string): { translation: string; confidence
       replace: () => "She performed flawlessly and executed her role to absolute perfection."
     },
     {
-      regex: /^he\s+has\s+unspoken\s+rizz$/i,
+      regex: /^he\s+has\s+(unspoken\s+)?rizz$/i,
       replace: () => "He possesses effortless charm and natural interpersonal charisma."
     },
     {
       regex: /^you\s+need\s+to\s+touch\s+grass$/i,
-      replace: () => "You should step away from your digital screen and spend time in the real world."
+      replace: () => "You should step away from your digital screen and reconnect with real life."
     },
     {
       regex: /^that\s+is\s+so\s+delulu$/i,
@@ -262,28 +363,38 @@ export function hybridTranslate(text: string): { translation: string; confidence
     },
     {
       regex: /^it'?s\s+giving\s+(.+)$/i,
-      replace: (m) => `It conveys the distinct aesthetic and atmosphere of ${m[1]}.`
+      replace: (m) => `It conveys the distinct aesthetic and aura of ${m[1]}.`
+    },
+    {
+      regex: /^(hold on|wait)?\s*let\s+(him|them|bro)\s+cook$/i,
+      replace: (m) => `Allow ${m[2]} the freedom to pursue the idea without premature interruption.`
+    },
+    {
+      regex: /^we\s+are\s+so\s+back$/i,
+      replace: () => "Our fortunes have miraculously reversed and we are in an overwhelmingly favorable position."
+    },
+    {
+      regex: /^it'?s\s+over\s+for\s+(him|bro|us)$/i,
+      replace: (m) => `Circumstances for ${m[1]} have deteriorated beyond any conceivable hope of redemption.`
     }
   ];
 
-  for (const pattern of wholeSentencePatterns) {
+  for (const pattern of idiomaticPatterns) {
     const match = trimmed.match(pattern.regex);
     if (match) {
       return { translation: pattern.replace(match), confidence: 0.95 };
     }
   }
 
-  // Token and phrase substitution engine
+  // Token substitution with phrase precedence
   let processed = trimmed;
   let matchesCount = 0;
 
-  // Sort by term length descending so multi-word idioms are replaced before single words
   const sortedDictionary = [...SLANG_DICTIONARY].sort((a, b) => b.term.length - a.term.length);
 
   for (const item of sortedDictionary) {
     const termsToMatch = [item.term, ...item.variations].sort((a, b) => b.length - a.length);
     for (const phrase of termsToMatch) {
-      // Escape regex special chars
       const escaped = phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       const regex = new RegExp(`\\b${escaped}\\b`, "gi");
       if (regex.test(processed)) {
@@ -293,7 +404,6 @@ export function hybridTranslate(text: string): { translation: string; confidence
     }
   }
 
-  // Clean up punctuation and capitalization
   let cleaned = processed.replace(/\s{2,}/g, " ").trim();
   if (cleaned.length > 0) {
     cleaned = cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
@@ -302,13 +412,8 @@ export function hybridTranslate(text: string): { translation: string; confidence
     }
   }
 
-  if (matchesCount > 0) {
-    return { translation: cleaned, confidence: 0.9 };
-  }
-
-  // If no slang detected, return clear polite English paraphrase
   return {
     translation: cleaned,
-    confidence: 0.7
+    confidence: matchesCount > 0 ? 0.92 : 0.75
   };
 }
